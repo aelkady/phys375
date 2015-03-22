@@ -24,7 +24,7 @@ r_c = 0.001;
 r_max_1 = 10^7;
 r_max_2 = 10^9;
 %r = [r_c, 10^10];
-r = linspace(r_c, 10^9, 10);
+r = linspace(r_c, 10^9, 1000);
 T_c = 15*10^6;
 rho_c = 1.622*10^5;
 M_c = ((4*pi) / 3)*(r_c^3)*(rho_c);
@@ -36,48 +36,37 @@ E_c = Epp_c + Ecno_c;
 L_c = ((4*pi) / 3)*(r_c^3)*(rho_c)*E_c;
 
 boundary_conditions_c = [rho_c, T_c, M_c, L_c, 10^5];
+options = odeset('Events', @starEvent);
+[R, Star, TE, YE, IE, sol] = ode45(@solveStar,r, boundary_conditions_c, options);
 
-%options = odeset('RelTol',1e-4,'AbsTol',[1e-5 1e-5 1e-5 1e-5 1e-5]);
-%for rMax = [r_c:r_max]
-for rMax = [10^7:10^9]
-    options = odeset('Events', @starEvent);
-    [R, Star, TE, YE, IE, sol] = ode45(@solveStar, [r_c rMax], boundary_conditions_c, options);
-    if(isEmpty(IE))
-        fprintf('sup');
-    else
-        fprintf('found it');
-        break
-    end
-end
-%Star(:,1) = rho, Star(:,2) = T
-Kappa_es = ones(10,1)*(0.02*(1+X));
+plot(R, Star(:,1));
+title('Rho');
+figure();
+plot(R, Star(:,2));
+title('Temp');
+figure();
+plot(R, Star(:,3));
+title('Mass');
+figure();
+plot(R, Star(:,4));
+title('Lum');
+figure();
+plot(R, Star(:,5));
+title('Tau');
+figure();
+
+[cols_size row_size] = size(R);
+Kappa_es = ones(cols_size,1)*(0.02*(1+X));
 Kappa_ff = (1.0.*10^24).*(Z+0.0001).*(Star(:,1).^(0.7)).*(Star(:,2).^(-3.5));
 Kappa_H = (2.5.*10.^(-32)).*(Z/0.02).*(Star(:,1).^(0.5)).*(Star(:,2).^(9));
 Kappa = ((1./Kappa_H) + (1./max(Kappa_es, Kappa_ff))).^(-1);
-Star(:,1)
-%hold all;
-%plot(R, log10(Kappa_es));
-%plot(R, log10(Kappa_ff));
-%plot(R, log10(Kappa_H));
-%plot(R, log10(Kappa));
-%hold off;
-
-%plot(R, Star(:,1));
-%title('Rho');
-%figure();
-%plot(R, Star(:,2));
-%title('Temp');
-%figure();
-%plot(R, Star(:,3));
-%title('Mass');
-%figure();
-%plot(R, Star(:,4));
-%title('Lum');
-%figure();
-%plot(R, Star(:,5));
-%title('Tau');
-%plot(R, Kappa);
-%title('Kappa');
+hold all;
+plot(R, log10(Kappa_es));
+plot(R, log10(Kappa_ff));
+plot(R, log10(Kappa_H));
+plot(R, log10(Kappa));
+hold off;
+title('Kappa');
 
 function ds = solveStar(r, s)
 global delta_t;
@@ -126,7 +115,7 @@ ds(3) = 4*pi*r^2*s(1);
 
 %dL/dr
 Epp = 1.07*10^(-7)*(s(1) / 10^5)*X^2*(s(2) / 10^6)^4;
-Ecno = 8.24*10^(-26)*(s(1) / 10^5)*X*X_CNO*(s(2) / 10^6)^(-19.9);
+Ecno = 8.24*10^(-26)*(s(1) / 10^5)*X*X_CNO*(s(2) / 10^6)^(19.9);
 E = Epp + Ecno;
 ds(4) = 4*pi*r^2*s(1)*E;
 
@@ -136,8 +125,8 @@ delta_t = (Kappa*(s(1)^2)) / (abs(ds(1)));
 
 function[value, isTerminal, direction] = starEvent(r, s)
 global delta_t;
-thresh = 0.001;
-value = s(5);
-isTerminal = (delta_t < thresh);
+thresh = 0.0001;
+value = thresh - delta_t;
+isTerminal = 1;
 direction = 0;
 
