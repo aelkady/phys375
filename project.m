@@ -22,14 +22,9 @@ Z = 1-X-Y; %10^(-5);
 mu = (2*X + 0.75*Y + 0.5*Z)^(-1);
 
 r_c = 1e-6;
-% r_max_1 = 10^7;
-% r_max_2 = 10^9;
-%r = [r_c, 10^10];
-% r = linspace(r_c, 3e9, 1e4);
 R_sun = 6.955e8;
 R_max = 50*R_sun;
 T_c = 8.23e6;
-%rho_c = 70500;
 t = cputime;
 i = 1;
 rho_c = (300:100:500000);
@@ -79,14 +74,6 @@ for rho_c = (300:100:500000)
     end
     i = i + 1;
 end
-e = cputime-t
-% y = @(x)interp1(rho_c, rho_c_matrix, x, 'spline');
-% zero = fzero(y,[0.3 500])
-% rho_c = (300:100:500000);
-% plot(rho_c, rho_c_matrix);
-% title('blah');
-% figure();
-
 
 T_star
 rho_c
