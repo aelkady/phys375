@@ -35,14 +35,16 @@ R_star_new/R_sun
 M_star_new/M_sun
 L_star_new/L_sun
 
-hold on
-plot(R./R_star_new, Rho./rho_c_new, '-k');
+plot(R./R_sun, Rho./rho_c_new);
 title('Rho');
-plot(R./R_star_new, Temp./T_c, '-r');
+figure();
+plot(R./R_sun, Temp./T_c);
 title('Temp');
-plot(R./R_star_new, Mass./M_star_new,'-g');
+figure();
+plot(R./R_sun, Mass./M_sun);
 title('Mass');
-plot(R./R_star_new, Lum./L_star_new,'-b');
+figure();
+plot(R./R_sun, Lum./Lum_sun);
 title('Lum');
 
 [cols_size,~] = size(R);
