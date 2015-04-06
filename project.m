@@ -24,7 +24,9 @@ R_sun = 6.95800e8;
 eps_abs = 1e-5;
 eps_step = 1e-5;
 
-T_c = 0.2e6:2.5e5:50e6;
+A = 0.2e6:5e5:10e6;
+B = 10e6:2.5e5:100e6;
+T_c = cat(2,A,B);
 length = size(T_c, 2);
 Luminosity = ones(1, length);
 T_star = ones(1, length);
@@ -71,12 +73,12 @@ for j=1:length
         i=i+1;
     end
     i = 0;
-    if(L_star_new == 0)
+    if((L_star_new == 0) || (abs(real(function_rho_c_new)) > 7.5))
         Luminosity(1, j) = nan;
     else   
         Luminosity(1, j) = real(L_star_new/L_sun);
     end;
-    if(T_star_new == 0)
+    if((T_star_new == 0) || (abs(real(function_rho_c_new)) > 7.5))
         T_star(1, j) = nan;
     else   
         T_star(1, j) = real(T_star_new);
@@ -87,4 +89,9 @@ plot(log10(T_star), log10(Luminosity), '*b');
 set(gca,'xdir','reverse');
 xlim([3 4.15])
 ylim([-6 6])
+xlim([3 4.1])
+ylim([-6 5])
+title('Main Sequence of Stars')
+xlabel('Log Base 10 of Temperature')
+ylabel('Log Base 10 of Luminosity Divided by the Luminosity of the Sun')
 
